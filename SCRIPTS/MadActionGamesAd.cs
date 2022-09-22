@@ -314,6 +314,29 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
         }
     }
 
+    public void ChangeSmallBannerPosition(int pos)
+    {
+        switch (pos)
+        {
+            case 1:
+                this.smallBannerView.SetPosition(AdPosition.TopRight);
+                break;
+            case 2:
+                this.smallBannerView.SetPosition(AdPosition.BottomRight);
+                break;
+            case 3:
+                this.smallBannerView.SetPosition(AdPosition.Top);
+                break;
+            case 4:
+                this.smallBannerView.SetPosition(AdPosition.Bottom);
+                break;
+            case 5:
+                this.smallBannerView.SetPosition(AdPosition.BottomLeft);
+                break;
+        }
+        this.smallBannerView.Show();
+    }
+
     public void HideLargeAdmobBanner()
     {
 
