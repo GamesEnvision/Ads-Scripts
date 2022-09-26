@@ -4,32 +4,43 @@ using UnityEngine.Advertisements;
 using GoogleMobileAds.Api;
 using System.Collections;
 using Sirenix.OdinInspector;
+using UnityEngine.UI;
 
-public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener
+public class MadActionGamesAd : MonoBehaviour
 {
 
+
     public static MadActionGamesAd Instance;
-    [Title("Bools")]
-    public bool isTestAds;
+    [Title("BOOLS")]
+    public bool TestMode;
+    public bool isDebugLog = false;
     public bool OneBannerAtA_Time;
-    [Title("Ids")]
+    [Title("ADMOB IDs")]
     public string admob_AppID;
     public string admob_InterID;
     public string admob_BannerID;
     public string admob_LargeBannerID;
+    public string admob_RewardedID = "ca-app-pub-9468300227416279/5045391667"; //Orignal ID
+
+    [Title("UNITY ADS")]
+    public UnityAdsInitializer UnityAdsInitializer;
+    public UnityInterstitialAds UnityInterstitialAd;
+    public UnityRewardedAds UnityRewardedAds;
+    public string UnityAdID;
 
     private bool isInternetAvailable = false;
     private bool isAdsInitialized = false;
-    private bool isUnityAdsReady = false;
 
-
+    //public AdsInitializer UnityAdsInitializer;
+    //public InterstitialAdExample UnityInterstitialAd;
     public BannerView smallBannerView;
     public BannerView largeBannerView;
     public GoogleMobileAds.Api.InterstitialAd interstitial;
 
-    public string unityId;
-    public string placementId = "video";
-    public string staticPlacementId = "Android_Static";
+    [Title("DEBUG TEXT")]
+    public Text debugLogText;
+
+
 
     #region ADS_INITIALIZATION
 
@@ -46,9 +57,8 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
             DontDestroyOnLoad(this.gameObject);
         }
 
-        isUnityAdsReady = false;
 
-        if (isTestAds)
+        if (TestMode)
         {
             admob_AppID = "ca-app-pub-3940256099942544~3347511713"; ;
             admob_InterID = "ca-app-pub-3940256099942544/1033173712"; ;
@@ -88,7 +98,7 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
     {
         try
         {
-            InitUnityAds();
+            //  InitUnityAds();
             MobileAds.Initialize(admob_AppID);
 
             RequestingBanner();
@@ -106,19 +116,15 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
     {
         if (SystemInfo.systemMemorySize > 1024)
         {
-            Advertisement.Initialize(unityId, isTestAds);
 
-            Invoke("LoadUnityAd", 2);
+            //Advertisement.Initialize(unityId, isTestAds);
+            //UnityAdsInitializer.InitializeAds();
 
             Debug.Log("InitUnityAds CALLED");
         }
     }
 
-    public void LoadUnityAd()
-    {
-           Advertisement.Load(placementId, this);
-            Debug.Log("LoadUnityAd CALLED");
-    }
+
 
     public bool CheckInitialization()
     {
@@ -314,29 +320,6 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
         }
     }
 
-    public void ChangeSmallBannerPosition(int pos)
-    {
-        switch (pos)
-        {
-            case 1:
-                this.smallBannerView.SetPosition(AdPosition.TopRight);
-                break;
-            case 2:
-                this.smallBannerView.SetPosition(AdPosition.BottomRight);
-                break;
-            case 3:
-                this.smallBannerView.SetPosition(AdPosition.Top);
-                break;
-            case 4:
-                this.smallBannerView.SetPosition(AdPosition.Bottom);
-                break;
-            case 5:
-                this.smallBannerView.SetPosition(AdPosition.BottomLeft);
-                break;
-        }
-        this.smallBannerView.Show();
-    }
-
     public void HideLargeAdmobBanner()
     {
 
@@ -359,6 +342,29 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
         }
     }
 
+    public void ChangeSmallBannerPosition(int pos)
+    {
+        switch (pos)
+        {
+            case 1:
+                this.smallBannerView.SetPosition(AdPosition.TopRight);
+                break;
+            case 2:
+                this.smallBannerView.SetPosition(AdPosition.BottomRight);
+                break;
+            case 3:
+                this.smallBannerView.SetPosition(AdPosition.Top);
+                break;
+            case 4:
+                this.smallBannerView.SetPosition(AdPosition.Bottom);
+                break;
+            case 5:
+                this.smallBannerView.SetPosition(AdPosition.BottomLeft);
+                break;
+        }
+        this.smallBannerView.Show();
+
+    }
 
     public void ShowAdmobInterstitial()
     {
@@ -397,15 +403,11 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
                     {
 
 
-                        if (isUnityAdsReady)
+                        if (UnityInterstitialAd.isAdLoadedUnity)
                         {
-                               Advertisement.Show(placementId, this);
+                            UnityInterstitialAd.ShowAd();
                         }
-                        else
-                        {
-                               Advertisement.Load(placementId);
-                        }
-
+                       
                     }
                     catch (Exception e)
                     {
@@ -415,6 +417,19 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
             }
         }
 
+    }
+
+    public void Show_Unity_NoCondition()
+    {
+
+        //UnityInterstitialAd.ShowAd();
+
+
+    }
+    public void Load_Unity_NoCondition()
+    {
+        Debug.Log("Load_Unity_NoCondition CALLED");
+        //UnityInterstitialAd.LoadAd();
     }
 
 
@@ -427,17 +442,17 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
             {
                 if (CheckInitialization())
                 {
-
                     try
                     {
-                        if (isUnityAdsReady)
+                        if (UnityInterstitialAd.isAdLoadedUnity)
                         {
-                              Advertisement.Show(placementId, this);
+                            UnityInterstitialAd.ShowAd();
+
                         }
                         else if (interstitial.IsLoaded())
                         {
                             ShowAdmobInterstitial();
-                             Advertisement.Load(placementId);
+
                         }
 
                     }
@@ -466,11 +481,11 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
                         {
                             ShowAdmobInterstitial();
                         }
-                        else 
+                        else
                         {
                             Show_Unity();
                         }
-                       
+
 
 
                     }
@@ -483,41 +498,5 @@ public class MadActionGamesAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
         }
     }
 
-    #region UNITY_ADS_CALLBACKS
 
-    public void OnUnityAdsAdLoaded(string adUnitId)
-    {
-        Debug.Log("Unity Ad LOADED");
-        isUnityAdsReady = true;
-
-       
-    }
-
-    public void OnUnityAdsFailedToLoad(string adUnitId, UnityAdsLoadError error, string message)
-    {
-        isUnityAdsReady = false;
-        Debug.Log($"Error loading Ad Unit: {adUnitId} - {error.ToString()} - {message}");
-        // Optionally execute code if the Ad Unit fails to load, such as attempting to try again.
-    }
-
-    public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnUnityAdsShowStart(string placementId)
-    {
-        //throw new NotImplementedException();
-    }
-
-    public void OnUnityAdsShowClick(string placementId)
-    {
-        //throw new NotImplementedException();
-    }
-
-    public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
-    {
-        //throw new NotImplementedException();
-    }
-    #endregion
 }

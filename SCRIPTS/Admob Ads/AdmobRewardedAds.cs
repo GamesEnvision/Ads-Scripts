@@ -3,13 +3,13 @@ using UnityEngine;
 using UnityEngine.Advertisements;
 using UnityEngine.UI;
 
-public class GoogleMobileAdsDemoScript : MonoBehaviour
+public class AdmobRewardedAds : MonoBehaviour
 {
-    public string AdUnitId = "ca-app-pub-9468300227416279/5045391667"; //Orignal ID
-    public bool isDebugLog;
+    public  MadActionGamesAd MadActionGamesAd;
+
+
 
     public RewarderAds RewarderAds;
-    public Text Admob_DebugText;
     [HideInInspector]
     public RewardedAd rewardedAd;
 
@@ -23,14 +23,14 @@ public class GoogleMobileAdsDemoScript : MonoBehaviour
     {
         string adUnitId;
 
-        if (MadActionGamesAd.Instance.isTestAds)
+        if (MadActionGamesAd.Instance.TestMode)
         {
 
             adUnitId = "ca-app-pub-3940256099942544/5224354917"; //rewarded Test ID
         }
         else
         {
-            adUnitId = AdUnitId;
+            adUnitId = MadActionGamesAd.admob_RewardedID;
 
         }
 
@@ -53,18 +53,18 @@ public class GoogleMobileAdsDemoScript : MonoBehaviour
         AdRequest request = new AdRequest.Builder().Build();
         // Load the rewarded ad with the request.
         this.rewardedAd.LoadAd(request);
-        if (isDebugLog)
+        if (MadActionGamesAd.isDebugLog)
         {
-            Admob_DebugText.text += "CreateAndLoadRewardedAd()";
+            MadActionGamesAd.debugLogText.text += "CreateAndLoadRewardedAd()";
         }
     }
 
     public void HandleRewardedAdLoaded(object sender, System.EventArgs args)
     {
         MonoBehaviour.print("HandleRewardedAdLoaded event received");
-        if (isDebugLog)
+        if (MadActionGamesAd.isDebugLog)
         {
-            Admob_DebugText.text += "HandleRewardedAdLoaded event received";
+            MadActionGamesAd.debugLogText.text += "HandleRewardedAdLoaded event received";
         }
     }
 
@@ -73,9 +73,9 @@ public class GoogleMobileAdsDemoScript : MonoBehaviour
         MonoBehaviour.print(
             "HandleRewardedAdFailedToLoad event received with message: "
                              + args.Message);
-        if (isDebugLog)
+        if (MadActionGamesAd.isDebugLog)
         {
-            Admob_DebugText.text += "HandleRewardedAdFailedToLoad event received with message: "
+            MadActionGamesAd.debugLogText.text += "HandleRewardedAdFailedToLoad event received with message: "
                              + args.Message;
         }
     }
@@ -118,9 +118,9 @@ public class GoogleMobileAdsDemoScript : MonoBehaviour
         if (this.rewardedAd.IsLoaded())
         {
             this.rewardedAd.Show();
-            if (isDebugLog)
+            if (MadActionGamesAd.isDebugLog)
             {
-                Admob_DebugText.text += " WAS  LOADED ";
+                MadActionGamesAd.debugLogText.text += " WAS  LOADED ";
             }
         }
 
@@ -129,9 +129,9 @@ public class GoogleMobileAdsDemoScript : MonoBehaviour
     public void ShowAdmobRewarded_NoCheck()
     {
         this.rewardedAd.Show();
-        if (isDebugLog)
+        if (MadActionGamesAd.isDebugLog)
         {
-            Admob_DebugText.text += " WAS  LOADED ";
+            MadActionGamesAd.debugLogText.text += " WAS  LOADED ";
         }
 
     }

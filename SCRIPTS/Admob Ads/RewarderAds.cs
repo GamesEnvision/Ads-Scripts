@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Sirenix.OdinInspector;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Advertisements;
@@ -13,76 +14,73 @@ public class RewarderAds : MonoBehaviour
     }
     #endregion
 
-    public GoogleMobileAdsDemoScript GoogleMobileAdsDemoScript;
-    public UnityRewardedAdsScript UnityRewardedAdsScript;
-
+    public AdmobRewardedAds AdmobRewardedAds;
+    public UnityRewardedAds UnityRewardedAds;
 
     public void ViewRewarded_Admob_Unity()
     {
-        if (GoogleMobileAdsDemoScript.rewardedAd.IsLoaded())
+        if (AdmobRewardedAds.rewardedAd.IsLoaded())
         {
-            GoogleMobileAdsDemoScript.ShowAdmobRewarded_NoCheck();
+            AdmobRewardedAds.ShowAdmobRewarded_NoCheck();
         }
         else
         {
-            if (UnityRewardedAdsScript.UnityRewardedLoaded)
-            {
-                UnityRewardedAdsScript.ShowRewardedAd();
-            }
+            UnityRewardedAds.ShowUnityRewardedAd();
         }
     }
+    [ReadOnly]
     public int option = 0;
 
     public void AdFinished()
     {
         Debug.Log("AdFinished CALLED");
-        if (option == 1) // watch video for coins Ad
+        if (option == 1)
         {
             MainMenuUI.instance._Get100Coins();
         }
-        if (option == 2) // watch video for coins Ad
+        if (option == 2) 
         {
             GameplayControl.instance._SkipLevel();
-         
+
         }
-        if (option == 3) // watch video for coins Ad
+        if (option == 3)
         {
             GameplayControl.instance._Get2XCoins();
         }
-        if (option == 4) // watch video for coins Ad
+        if (option == 4) 
         {
 
         }
-        if (option == 5) // watch video for coins Ad
+        if (option == 5) 
         {
             RewardedInApps.instance._GoldPackage1();
         }
-        if (option == 6) // watch video for coins Ad
+        if (option == 6) 
         {
             RewardedInApps.instance._GoldPackage2();
 
         }
-        if (option == 7) // watch video for coins Ad
+        if (option == 7) 
         {
             RewardedInApps.instance._GoldPackage3();
 
         }
-        if (option == 8) // watch video for coins Ad
+        if (option == 8) 
         {
             RewardedInApps.instance._UnlockAllLevels();
 
         }
-        if (option == 9) // watch video for coins Ad
+        if (option == 9)
         {
             RewardedInApps.instance._UnlockAllGuns();
 
         }
-        if (option == 10) // watch video for coins Ad
+        if (option == 10) 
         {
             RewardedInApps.instance._UnlockAllGame();
 
         }
-        if (option == 11) // watch video for coins Ad
+        if (option == 11) 
         {
             GameplayControl.instance._SkipLevel();
 
