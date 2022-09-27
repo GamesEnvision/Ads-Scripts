@@ -34,6 +34,7 @@ public class MadActionGamesAd : MonoBehaviour
     //public AdsInitializer UnityAdsInitializer;
     //public InterstitialAdExample UnityInterstitialAd;
     public BannerView smallBannerView;
+    public BannerView smallBannerViewLong;
     public BannerView largeBannerView;
     public GoogleMobileAds.Api.InterstitialAd interstitial;
 
@@ -161,6 +162,7 @@ public class MadActionGamesAd : MonoBehaviour
     public void RequestingBanner()
     {
         RequestBanner();
+        RequestBannerLong();
     }
 
     public void RequestingMediumBanner()
@@ -180,6 +182,28 @@ public class MadActionGamesAd : MonoBehaviour
                 {
                     this.smallBannerView = new BannerView(admob_BannerID, GoogleMobileAds.Api.AdSize.Banner, GoogleMobileAds.Api.AdPosition.Top);
                     this.smallBannerView.LoadAd(this.CreateAdRequest());
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+    }
+
+
+    private void RequestBannerLong()
+    {
+        if (PlayerPrefs.GetInt("ADSUNLOCK") != 1)
+        {
+            try
+            {
+                if (this.smallBannerViewLong != null)
+                    this.smallBannerViewLong.Destroy();
+                if (this.smallBannerViewLong == null)
+                {
+                    this.smallBannerViewLong = new BannerView(admob_BannerID, GoogleMobileAds.Api.AdSize.Leaderboard, GoogleMobileAds.Api.AdPosition.Top);
+                    this.smallBannerViewLong.LoadAd(this.CreateAdRequest());
                 }
             }
             catch (Exception e)
@@ -267,6 +291,34 @@ public class MadActionGamesAd : MonoBehaviour
             }
         }
     }
+    public void ShowSmallAdmobBannerLong()
+    {
+
+        if (OneBannerAtA_Time)
+        {
+            HideLargeAdmobBanner();
+        }
+
+        if (PlayerPrefs.GetInt("ADSUNLOCK") != 1)
+        {
+            if (IsInternetConnection())
+            {
+                if (CheckInitialization())
+                {
+                    try
+                    {
+                        this.smallBannerViewLong.Show();
+
+
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            }
+        }
+    }
 
     public void ShowLargeAdmobBanner()
     {
@@ -310,6 +362,26 @@ public class MadActionGamesAd : MonoBehaviour
                     {
                         SmallBannerCanvas.instance.AdaptiveSmallBannerBG.SetActive(false);
                     }
+
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+    }
+    public void HideSmallBannerLong()
+    {
+
+        if (PlayerPrefs.GetInt("ADSUNLOCK") != 1)
+        {
+            try
+            {
+                if (CheckInitialization())
+                {
+                    this.smallBannerViewLong.Hide();
+
 
                 }
             }
@@ -407,7 +479,7 @@ public class MadActionGamesAd : MonoBehaviour
                         {
                             UnityInterstitialAd.ShowAd();
                         }
-                       
+
                     }
                     catch (Exception e)
                     {
