@@ -27,10 +27,27 @@ public class bl_HudManager : MonoBehaviour
     public Vector2 m_ReferenceResolution = new Vector2(800f, 600f);
     [Range(0f, 1f), Tooltip("Determines if the scaling is using the width or height as reference, or a mix in between."), SerializeField]
     public float m_MatchWidthOrHeight;
-     [Tooltip("Select Reference Resolution automatically in run time.")]
+    [Tooltip("Select Reference Resolution automatically in run time.")]
     public bool AutoScale = true;
     [Header("Style")]
     public GUIStyle TextStyle;
+
+
+    void Start()
+    {
+        //LocalPlayer = GameObject.FindGameObjectWithTag("Player").transform;
+        Invoke("GetTarget", 1);
+        Huds[0].Arrow.ArrowSize = Screen.width / 25;
+        Huds[0].m_Target = gameObject.transform;
+    }
+    void GetTarget()
+    {
+        if (FindObjectOfType<FPSPlayer>())
+        {
+            LocalPlayer = FindObjectOfType<FPSPlayer>().transform;
+            print("target");
+        }
+    }
 
     private static bl_HudManager _instance;
 
@@ -73,7 +90,7 @@ public class bl_HudManager : MonoBehaviour
         {
             if (!Huds[i].Hide)
             {
-                if(Huds[i].HideOnCloseDistance > 0 && GetHudDistance(i) < Huds[i].HideOnCloseDistance) { continue; }
+                if (Huds[i].HideOnCloseDistance > 0 && GetHudDistance(i) < Huds[i].HideOnCloseDistance) { continue; }
                 if (Huds[i].HideOnLargeDistance > 0 && GetHudDistance(i) > Huds[i].HideOnLargeDistance) { continue; }
                 OnScreen(i);
                 OffScreen(i);
@@ -198,7 +215,7 @@ public class bl_HudManager : MonoBehaviour
 
         if (Huds[i].Arrow.ArrowIcon != null && Huds[i].Arrow.ShowArrow)
         {
-           
+
             //Check target if OnScreen
             if (!bl_HudUtility.isOnScreen(bl_HudUtility.ScreenPosition(Huds[i].m_Target), Huds[i].m_Target))
             {
@@ -206,8 +223,8 @@ public class bl_HudManager : MonoBehaviour
                 Vector3 ArrowPosition = Huds[i].m_Target.position + Huds[i].Arrow.ArrowOffset;
                 Vector3 pointArrow = bl_HudUtility.mCamera.WorldToScreenPoint(ArrowPosition);
 
-                pointArrow.x = pointArrow.x / bl_HudUtility.mCamera.pixelWidth;
-                pointArrow.y = pointArrow.y / bl_HudUtility.mCamera.pixelHeight;
+                //pointArrow.x = pointArrow.x / bl_HudUtility.mCamera.pixelWidth;
+                //pointArrow.y = pointArrow.y / bl_HudUtility.mCamera.pixelHeight;
 
                 Vector3 mForward = Huds[i].m_Target.position - bl_HudUtility.mCamera.transform.position;
                 Vector3 mDir = bl_HudUtility.mCamera.transform.InverseTransformDirection(mForward);
@@ -215,11 +232,11 @@ public class bl_HudManager : MonoBehaviour
                 pointArrow.x = 0.5f + mDir.x * 20f / bl_HudUtility.mCamera.aspect;
                 pointArrow.y = 0.5f + mDir.y * 20f;
 
-                if (pointArrow.z < 0)
-                {
-                    pointArrow *= -1f;
-                    pointArrow *= -1f;
-                }
+                //if (pointArrow.z < 0)
+                //{
+                //    pointArrow *= -1f;
+                //    pointArrow *= -1f;
+                //}
                 //Arrow
                 GUI.color = Huds[i].m_Color;
 
@@ -234,53 +251,53 @@ public class bl_HudManager : MonoBehaviour
 
                 //Calculate area to rotate guis
                 float mRot = bl_HudUtility.GetRotation(bl_HudUtility.mCamera.pixelWidth / (2), bl_HudUtility.mCamera.pixelHeight / (2), Xpos, Ypos);
-              //Get pivot from area
-                Vector2 mPivot = bl_HudUtility.GetPivot(Xpos, Ypos, Huds[i].Arrow.ArrowSize);
+                //Get pivot from area
+                Vector2 mPivot = bl_HudUtility.GetPivot(0, 0, Screen.width);
                 //Arrow
                 Matrix4x4 matrix = GUI.matrix;
                 GUIUtility.RotateAroundPivot(mRot, mPivot);
-                GUI.DrawTexture(new Rect(mPivot.x - bl_HudUtility.HalfSize(Huds[i].Arrow.ArrowSize), mPivot.y - bl_HudUtility.HalfSize(Huds[i].Arrow.ArrowSize), Huds[i].Arrow.ArrowSize, Huds[i].Arrow.ArrowSize), Huds[i].Arrow.ArrowIcon);
-                GUI.matrix = matrix;
+                GUI.DrawTexture(new Rect(mPivot.x - bl_HudUtility.HalfSize(Huds[i].Arrow.ArrowSize - Screen.width / 6), mPivot.y - bl_HudUtility.HalfSize(Huds[i].Arrow.ArrowSize), Huds[i].Arrow.ArrowSize, Huds[i].Arrow.ArrowSize), Huds[i].Arrow.ArrowIcon);
+                // GUI.matrix = matrix;
 
-                float ClampedX = Mathf.Clamp(mPivot.x, 20, (Screen.width - OffScreenIconSize) - 20);
-                float ClampedY = Mathf.Clamp(mPivot.y, 20, (Screen.height - OffScreenIconSize) - 20);
-                GUI.DrawTexture(bl_HudUtility.ScalerRect(new Rect(ClampedX, ClampedY, OffScreenIconSize, OffScreenIconSize)), Huds[i].m_Icon);
+                // float ClampedX = Mathf.Clamp(mPivot.x, 20, (Screen.width - OffScreenIconSize) - clampBorder);
+                // float ClampedY = Mathf.Clamp(mPivot.y, 20, (Screen.height - OffScreenIconSize) - clampBorder);
+                //// GUI.DrawTexture(bl_HudUtility.ScalerRect(new Rect(ClampedX, ClampedY, OffScreenIconSize, OffScreenIconSize)), Huds[i].m_Icon);
 
-                Vector2 ClampedTextPosition = mPivot;
-                //Icons and Text
-                if (!Huds[i].ShowDistance)
-                {
-                    if (!string.IsNullOrEmpty(Huds[i].m_Text))
-                    {
-                        Vector2 size = TextStyle.CalcSize(new GUIContent(Huds[i].m_Text));
-                        ClampedTextPosition.x = Mathf.Clamp(ClampedTextPosition.x, (size.x + OffScreenIconSize) + 30, ((Screen.width - OffScreenIconSize)- 10) - size.x);
-                        ClampedTextPosition.y = Mathf.Clamp(ClampedTextPosition.y, (size.y + OffScreenIconSize) + 35, ((Screen.height - size.y) - OffScreenIconSize) - 20);
-                        GUI.Label(bl_HudUtility.ScalerRect(new Rect(ClampedTextPosition.x - (size.x / 2), ClampedTextPosition.y - (size.y / 2), size.x, size.y)), Huds[i].m_Text, TextStyle);
-                    }
-                }
-                else
-                {
-                    float Distance = Vector3.Distance(LocalPlayer.position, Huds[i].m_Target.position);
-                    if (!string.IsNullOrEmpty(Huds[i].m_Text))
-                    {
-                        string text = Huds[i].m_Text + "\n <color=whitte>[" + string.Format("{0:N0}m", Distance) + "]</color>";
-                        Vector2 size = TextStyle.CalcSize(new GUIContent(text));
-                        ClampedTextPosition.x = Mathf.Clamp(ClampedTextPosition.x, (size.x + OffScreenIconSize) + 30, ((Screen.width - OffScreenIconSize) - 10) - size.x);
-                        ClampedTextPosition.y = Mathf.Clamp(ClampedTextPosition.y, (size.y + OffScreenIconSize) + 35, ((Screen.height - size.y) - OffScreenIconSize) - 20);
-                        GUI.Label(bl_HudUtility.ScalerRect(new Rect(ClampedTextPosition.x - (size.x / 2), (ClampedTextPosition.y - (size.y / 2)), size.x, size.y)), text, TextStyle);
-                    }
-                    else
-                    {
-                        string text = "<color=whitte>[" + string.Format("{0:N0}m", Distance) + "]</color>";
-                        Vector2 size = TextStyle.CalcSize(new GUIContent(text));
-                        ClampedTextPosition.x = Mathf.Clamp(ClampedTextPosition.x, (size.x + OffScreenIconSize) + 30, ((Screen.width - OffScreenIconSize) - 10) - size.x);
-                        ClampedTextPosition.y = Mathf.Clamp(ClampedTextPosition.y, (size.y + OffScreenIconSize) + 35, ((Screen.height - size.y) - OffScreenIconSize) - 20);
-                        GUI.Label(bl_HudUtility.ScalerRect(new Rect(ClampedTextPosition.x - (size.x / 2) , (ClampedTextPosition.y - (size.y / 2)), size.x, size.y)),text, TextStyle);
-                    }
-                }
+                // Vector2 ClampedTextPosition = mPivot;
+                // //Icons and Text
+                // if (!Huds[i].ShowDistance)
+                // {
+                //     if (!string.IsNullOrEmpty(Huds[i].m_Text))
+                //     {
+                //         Vector2 size = TextStyle.CalcSize(new GUIContent(Huds[i].m_Text));
+                //         ClampedTextPosition.x = Mathf.Clamp(ClampedTextPosition.x, (size.x + OffScreenIconSize) + 30, ((Screen.width - OffScreenIconSize)- 10) - size.x);
+                //         ClampedTextPosition.y = Mathf.Clamp(ClampedTextPosition.y, (size.y + OffScreenIconSize) + 35, ((Screen.height - size.y) - OffScreenIconSize) - 20);
+                //         //GUI.Label(bl_HudUtility.ScalerRect(new Rect(ClampedTextPosition.x - (size.x / 2), ClampedTextPosition.y - (size.y / 2), size.x, size.y)), Huds[i].m_Text, TextStyle);
+                //     }
+                // }
+                // else
+                // {
+                //     float Distance = Vector3.Distance(LocalPlayer.position, Huds[i].m_Target.position);
+                //     if (!string.IsNullOrEmpty(Huds[i].m_Text))
+                //     {
+                //         string text = Huds[i].m_Text + "\n <color=whitte>[" + string.Format("{0:N0}m", Distance) + "]</color>";
+                //         Vector2 size = TextStyle.CalcSize(new GUIContent(text));
+                //         ClampedTextPosition.x = Mathf.Clamp(ClampedTextPosition.x, (size.x + OffScreenIconSize) + 30, ((Screen.width - OffScreenIconSize) - 10) - size.x);
+                //         ClampedTextPosition.y = Mathf.Clamp(ClampedTextPosition.y, (size.y + OffScreenIconSize) + 35, ((Screen.height - size.y) - OffScreenIconSize) - 20);
+                //         //GUI.Label(bl_HudUtility.ScalerRect(new Rect(ClampedTextPosition.x - (size.x / 2), (ClampedTextPosition.y - (size.y / 2)), size.x, size.y)), text, TextStyle);
+                //     }
+                //     else
+                //     {
+                //         string text = "<color=whitte>[" + string.Format("{0:N0}m", Distance) + "]</color>";
+                //         Vector2 size = TextStyle.CalcSize(new GUIContent(text));
+                //         ClampedTextPosition.x = Mathf.Clamp(ClampedTextPosition.x, (size.x + OffScreenIconSize) + 30, ((Screen.width - OffScreenIconSize) - 10) - size.x);
+                //         ClampedTextPosition.y = Mathf.Clamp(ClampedTextPosition.y, (size.y + OffScreenIconSize) + 35, ((Screen.height - size.y) - OffScreenIconSize) - 20);
+                //         //GUI.Label(bl_HudUtility.ScalerRect(new Rect(ClampedTextPosition.x - (size.x / 2) , (ClampedTextPosition.y - (size.y / 2)), size.x, size.y)),text, TextStyle);
+                //     }
+                // }
                 // GUI.DrawTexture(bl_HudUtility.ScalerRect(new Rect(mPivot.x + marge.x,(mPivot.y + ((!Huds[i].ShowDistance) ? 10 : 20)) + marge.y, 25, 25)), Huds[i].m_Icon);
             }
-            GUI.color = Color.white;
+            //GUI.color = Color.white;
         }
     }
 
@@ -316,7 +333,7 @@ public class bl_HudManager : MonoBehaviour
     /// 
     /// </summary>
     /// <param name="i">Id of hud in list</param>
-    public void HideStateHud(int i,bool hide = false)
+    public void HideStateHud(int i, bool hide = false)
     {
         if (Huds[i] != null)
         {
@@ -373,11 +390,11 @@ public class bl_HudManager : MonoBehaviour
         //Create a loop
         if (hud.tip == false)
         {
-            hud.m_Color.a += Time.deltaTime * 0.5f;
+            hud.m_Color.a += Time.deltaTime * 3f;
         }
         else
         {
-            hud.m_Color.a -= Time.deltaTime * 0.5f;
+            hud.m_Color.a -= Time.deltaTime * 1f;
         }
     }
     /// <summary>
