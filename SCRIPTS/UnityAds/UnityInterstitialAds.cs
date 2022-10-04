@@ -45,6 +45,7 @@ public class UnityInterstitialAds : MonoBehaviour, IUnityAdsLoadListener, IUnity
         Debug.Log($"Error loading Ad Unit: {adUnitId} - {error.ToString()} - {message}");
         //  DebugLog.text = $"Error loading Ad Unit: {adUnitId} - {error.ToString()} - {message}";
         isAdLoadedUnity = false;
+        Advertisement.Load(_adUnitId, this);
 
         // Optionally execute code if the Ad Unit fails to load, such as attempting to try again.
     }
